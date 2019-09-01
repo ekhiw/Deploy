@@ -9,7 +9,7 @@
 #include <ESP8266WebServer.h>
 #include "WiFiManager.h"         //https://github.com/tzapu/WiFiManager
 
-#include <ESP8266HTTPClient.h>
+#include "ESP8266HTTPClient.h"
 
 #include <ArduinoJson.h>
 
@@ -43,8 +43,28 @@ void loop() {
   // put your main code here, to run repeatedly:
   
   if(cekInterval(5)){ //run every n second
-    Serial.println("trigger");
+    Serial.println("trigger "+pingServer());
     
+  }
+}
+
+String pingServer(){
+  String staging = "https://id-staging.sehati.co/api/ping";
+  WiFiClient client;
+  HTTPClient https;
+  https.begin(client, "id-staging.sehati.co",443,"/api/ping",true);
+  Serial.print("HTTPS REQUEST");
+  int httpCode= https.GET();
+  if(httpCode == 200){
+    Serial.print("Success ");
+    Serial.println(httpCode);
+    Serial.println(https.getString());
+    return https.getString();
+  }else{
+    Serial.print("fail ");
+    Serial.println(httpCode);
+    Serial.println(https.getString());
+    return "fail";
   }
 }
 
